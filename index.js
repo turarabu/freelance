@@ -1,30 +1,47 @@
-const fs = require('fs');
-const NEDB = require('nedb');
+const nedb = require('nedb');
+const express = require('express');
+const app = express();
 
-const insert = require('./temp/insert');
+app.use( express.static('frontend/dist') );
+app.use( express.json()) ;
+app.use( express.urlencoded() );
 
-const data = new NEDB({ filename: 'office' });
+app.post('/api/date', function (request, response) {
+    var date = new Date( request.body.date ).toDateString();
 
-var result = [];
+    var office = new nedb({ filename: 'data/office' });
+    var records = new nedb({ filename: 'data/records' });
 
-data.loadDatabase();
-main();
+    records.loadDatabase();
+    office.loadDatabase();
 
-function main () {
-    for (let key in insert) {
-        if ( insert.hasOwnProperty(key) )
-            handle(key, insert[key]);
-    }
+    office.find({}, function (error, data) {
+        records.find({ date }, function (error, result) {
+            var res = [];
 
-    fs.writeFileSync(`${__dirname}/temp/result.json`, JSON.stringify(result));
-}
+            result.forEach(function (record) {
+                if (
+                    (record.source.search('entrance') === -1) && 
+                    (record.source.search('exit') === -1)
+                ) return;
 
-function handle (key, object) {
-    for (let i in object)
-        if ( object.hasOwnProperty(i) ) {
-            if ( result[i] === undefined )
-                result[i] = {};
+                var push = record;
 
-            result[i][key] = object[i];
-        }
-}
+                for (let i = 0; i != data.length; ++i) {
+                    if( data[i].hash === record.idxid ) {
+                        push.user = data[i];
+                    }
+                }
+
+                res.push(push);
+            });
+
+            response.send( JSON.stringify(res) );
+        });
+    });
+
+});
+
+app.listen(8080, function () {
+    console.log('App listening on port 8080');
+});

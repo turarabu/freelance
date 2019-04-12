@@ -4,10 +4,10 @@
             button( :class='{"date-toggle": true, active: datepicker}' @click='datepicker = !datepicker' )
                 i( class='fa fa-sort-down' )
 
-            span( class='day' ) 8
+            span( class='day' ) {{ day }}
             div( class='details' )
-                span( class='mo-ye' ) Январь 2017,
-                span( class='week-day' ) Четверг
+                span( class='mo-ye' ) {{ `${month} ${year}` }}
+                span( class='week-day' ) {{ weekDay }}
 
         div( class='chart' )
             canvas#canvas
@@ -17,7 +17,6 @@
                 span( class='row red' ) Не пришедшие
 
         div#datepicker( :class='{active: datepicker}' )
-            div( class="datepicker-here" data-language='en' )
 </template>
 
 <script>
@@ -26,18 +25,61 @@ import ChartConfig from '@/script/chart-config'
 
 export default {
     methods: { getDate },
+    data: function () {
+        return {
+            datepicker: false,
+            day: 0,
+            month: '',
+            year: '2019',
+            weekDay: ''
+        };
+    },
     mounted: function () {
+        var configs = ChartConfig(Chart);
         var self = this;
-        var date = this.$el.querySelector('.datepicker');
+        var date = this.$el.querySelector('#datepicker');
         var canvas = this.$el.querySelector('#canvas');
         var context = canvas.getContext('2d');
 
-        // $(this.$el).datepicker({});
-        // $(this.$el).data('datepicker');
+        this.$root.datepicker = $(date).datepicker({
+            dateFormat: 'd DD MM yyyy',
+            maxDate: new Date(),
+            startDate: new Date(),
+            onSelect: function (...args) {
+                var q = args[0].split(' ');
+
+                self.day = q[0];
+                self.weekDay = q[1];
+                self.month = q[2];
+                self.year = q[3];
+                self.datepicker = false;
+
+                self.$forceUpdate();
+                self.$root.dateChange.call(self, ...args);
+            }
+        }).data('datepicker');
+
+        this.$root.datepicker.selectDate(new Date());
 
         this.$root.canvas = canvas;
-        this.$root.chart = new Chart(context, ChartConfig(Chart));
+        this.$root.chart = new Chart(context, configs);
         this.$root.chart.generateLegend();
+
+        this.$root.chartNew = function () {
+            var self = this;
+
+            setTimeout(function () {
+                self.$root.chart.data.datasets.forEach((dataset) => {
+                    dataset.data = [
+                        self.$root.table.length - (self.$root.later + self.$root.none),
+                        self.$root.later,
+                        self.$root.none
+                    ];
+                });
+                
+                self.$root.chart.update();
+            }, 500);
+        }
 
         setTimeout(function () {
             self.$root.chart.resize();
@@ -45,12 +87,6 @@ export default {
         this.$el.onbeforeprint = function (event) {
             self.$root.chart.resize();
         }
-    },
-
-    data: function () {
-        return {
-            datepicker: false
-        };
     }
 }
 

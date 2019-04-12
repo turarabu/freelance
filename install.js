@@ -30,6 +30,8 @@ function parse () {
                         insert.records[i] = {};
 
                     insert.records[i][key] = object[i];
+                    if (key === 'detected')
+                        insert.records[i].date = new Date(object[i]).toDateString();
                 }
         }
     }
@@ -49,8 +51,8 @@ function done () {
         let data = new nedb({ filename: 'data/records' });
 
         data.loadDatabase();
-        insert.office.forEach(function (record) {
-            record.detected = new Date(record.detected);
+        insert.records.forEach(function (record) {
+            record.detected = record.detected;
             data.insert(record);
         });
     }

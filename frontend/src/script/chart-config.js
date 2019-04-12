@@ -7,7 +7,7 @@ export default function (Chart) {
         type: 'doughnut',
         data: {
             datasets: [{
-                data: [ randomScalingFactor(), randomScalingFactor(), randomScalingFactor() ],
+                data: [ 0, 0, 0 ],
                 backgroundColor: [ '#1AAC9C', '#F1C40F', '#E74C3C' ],
                 label: ''
             }],
