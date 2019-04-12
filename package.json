@@ -1,0 +1,15 @@
+{
+  "name": "table",
+  "version": "1.0.0",
+  "description": "Office register",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Turar Abu <mail:mail@turarabu.me>",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "nedb": "^1.8.0"
+  }
+}
