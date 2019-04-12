@@ -1,7 +1,7 @@
 <template lang="pug">
     div#left
         div( class='date' )
-            label( class='date-toggle' )
+            button( :class='{"date-toggle": true, active: datepicker}' @click='datepicker = !datepicker' )
                 i( class='fa fa-sort-down' )
 
             span( class='day' ) 8
@@ -16,8 +16,8 @@
                 span( class='row yellow' ) Опоздавшие
                 span( class='row red' ) Не пришедшие
 
-        div( class='datepicker' )
-            // div( class="datepicker-here" data-language='en' )
+        div#datepicker( :class='{active: datepicker}' )
+            div( class="datepicker-here" data-language='en' )
 </template>
 
 <script>
@@ -45,6 +45,12 @@ export default {
         this.$el.onbeforeprint = function (event) {
             self.$root.chart.resize();
         }
+    },
+
+    data: function () {
+        return {
+            datepicker: false
+        };
     }
 }
 
@@ -117,17 +123,6 @@ function getDate () {
                 color $silver
                 font-weight 400
 
-    .datepicker
-        background $white
-        border-radius 3px
-        box-shadow 0 0 5px $concrete
-        position absolute
-        top 75px
-        left 5px
-        height 320px
-        width 300px
-        z-index 5
-
     .chart
         background $white
         display block
@@ -161,4 +156,19 @@ function getDate () {
                 background $turquoise
             &.yellow:before
                 background $sunflower
+
+#datepicker
+    background $white
+    border-radius 3px
+    box-shadow 0 0 0 $concrete
+    overflow hidden
+    max-height 0
+    position absolute
+    top 75px
+    left 5px
+    z-index 5
+    &.active
+        box-shadow 0 0 5px $concrete
+        max-height 400px
+
 </style>
