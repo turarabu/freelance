@@ -82,4 +82,14 @@ function dateChange(formattedDate, date, inst) {
 
 <style lang="stylus" scoped>
 @import '~@/style/palette'
+
+#home
+    display grid
+    grid-template-columns 320px 940px
+    justify-content space-between
+
+#left
+    align-self start
+    background $white
+    border-top 2px solid $turquoise
 </style>

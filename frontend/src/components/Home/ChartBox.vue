@@ -11,6 +11,11 @@
 
         div( class='chart' )
             canvas#canvas
+
+            div( class='total' )
+                span( v-html='empls' )
+                span( class='empls' ) сотрудников
+
             div( class='legend' )
                 span( class='row green' ) Пришедшие вовремя
                 span( class='row yellow' ) Опоздавшие
@@ -29,6 +34,7 @@ export default {
         return {
             datepicker: false,
             day: 0,
+            empls: 0,
             month: '',
             year: '2019',
             weekDay: ''
@@ -66,9 +72,11 @@ export default {
         this.$root.chart.generateLegend();
 
         this.$root.chartNew = function () {
-            var self = this;
-
             setTimeout(function () {
+                self.empls = parseInt( self.$root.table.length );
+                console.log(self);
+                self.$forceUpdate();
+
                 self.$root.chart.data.datasets.forEach((dataset) => {
                     dataset.data = [
                         self.$root.table.length - (self.$root.later + self.$root.none),
@@ -76,7 +84,7 @@ export default {
                         self.$root.none
                     ];
                 });
-                
+
                 self.$root.chart.update();
             }, 500);
         }
@@ -192,6 +200,19 @@ function getDate () {
                 background $turquoise
             &.yellow:before
                 background $sunflower
+
+.total
+    font-size 48px
+    line-height 32px
+    text-align center
+    position absolute
+    top 126px
+    left 116px
+
+    .empls
+        color $silver
+        display block
+        font-size 14px
 
 #datepicker
     background $white

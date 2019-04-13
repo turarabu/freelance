@@ -3,7 +3,7 @@
         div( class='header' )
             h3( class='title' ) Все сотрудники
             label( class='label' )
-                i( class='fa fa-timers' )
+                i( class='fa fa-search' )
                 input( class='input' placeholder='Поиск' v-model='nameFilter' @keyup='$forceUpdate()' )
 
         div( class='grid' )
@@ -14,7 +14,7 @@
             span( class='head' ) Ранний уход
 
         div(
-            :class='{grid: true, hide: empl.user ? empl.user.name.toLowerCase().search(nameFilter ? nameFilter.toLowerCase() : "") < 0 : false}'
+            :class='{grid: true, hide: isHidden(empl.user) }'
             v-if='$root.table' v-for='empl in $root.table'
         ) 
             img( class='data avatar' :src=' getPhoto(empl) ' )
@@ -27,10 +27,20 @@
 
 <script>
 export default {
-    methods: { getPhoto, getTime, getEnterDifference, getExitDifference },
+    methods: { isHidden, getPhoto, getTime, getEnterDifference, getExitDifference },
     created: function () {
         this.$root.TableBox = this;
     }
+}
+
+function isHidden (empl) {
+    if ( empl && empl.name && this.nameFilter && this.nameFilter.length > 0 ) {
+        if ( empl.name.toLowerCase().search(this.nameFilter) >= 0 )
+            return false;
+        else return true;
+    }
+
+    return false;
 }
 
 function getPhoto (empl) {
@@ -104,14 +114,24 @@ function getExitDifference (date, check) {
             margin 0 8px
 
         .label
+            display inline-block
             position relative
+
+            .fa
+                color $silver
+                position absolute
+                font-size 14px
+                left 12px
+                top 10px
 
         .input
             border 1px solid $silver
             border-radius 4px
             font-size 14px
             outline none
-            padding 6px 12px
+            margin-right 8px
+            padding 6px 12px 6px 32px
+            vertical-align middle
             width 300px
             &:focus, &:not(:empty)
                 border-color $concrete

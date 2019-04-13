@@ -3,8 +3,15 @@
         div( class='adaptive' )
             span( class='logo' ) Table
 
-            router-link( class='link active' to='/' ) Главная
-            router-link( class='link' to='/employees' ) Сотрудники
+            router-link(
+                to='/'
+                :class='{link: true, active: $route.path === "/"}'
+            ) Главная
+
+            router-link(
+                to='/employees'
+                :class='{link: true, active: $route.path === "/employees"}'
+            ) Сотрудники
 </template>
 
 <script>
